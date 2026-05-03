@@ -1,0 +1,1840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinOps Seller Payout Intelligence | Amazon Seller Services</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#0d0e14;
+  --bg2:#13141c;
+  --bg3:#1a1b26;
+  --card:#15161f;
+  --card2:#1c1d29;
+  --border:rgba(255,255,255,0.06);
+  --border2:rgba(255,255,255,0.11);
+  --text:#e2e3f0;
+  --text2:#a0a3c0;
+  --text3:#606280;
+  --amazon:#ff9900;
+  --amazon2:#ffb347;
+  --blue:#4f8ef7;
+  --blue2:#7eb3ff;
+  --green:#1fcc8a;
+  --green2:#52e0a8;
+  --red:#f05c6a;
+  --red2:#ff8a94;
+  --amber:#f7c547;
+  --amber2:#ffd97a;
+  --purple:#8b6ef7;
+  --teal:#22d4c8;
+  --font-head:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
+  --font-mono:'IBM Plex Mono','Courier New',Courier,monospace;
+  --r:10px;
+  --r2:14px;
+  --shadow:0 4px 24px rgba(0,0,0,0.4);
+}
+
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-head);font-size:14px;min-height:100vh;overflow-x:hidden}
+
+/* ─── SCROLLBAR ─────────────────────────────────────────── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ─── TOPBAR ────────────────────────────────────────────── */
+.topbar{
+  position:sticky;top:0;z-index:200;
+  background:rgba(13,14,20,0.92);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border2);
+  padding:0 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  height:58px;
+}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-logo{
+  width:34px;height:34px;border-radius:8px;
+  background:linear-gradient(135deg,var(--amazon),#e67e00);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:800;color:#fff;letter-spacing:-0.5px;
+  box-shadow:0 0 20px rgba(255,153,0,0.3);
+}
+.brand-text{font-size:15px;font-weight:700;letter-spacing:-0.3px}
+.brand-sub{font-size:11px;color:var(--text3);font-family:var(--font-mono);margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:14px}
+.live-pill{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(31,204,138,0.1);
+  border:1px solid rgba(31,204,138,0.25);
+  border-radius:20px;padding:4px 12px;
+  font-family:var(--font-mono);font-size:11px;color:var(--green);
+}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.6s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.25}}
+.badge-pill{
+  font-family:var(--font-mono);font-size:11px;
+  padding:4px 10px;border-radius:20px;
+  background:rgba(79,142,247,0.1);
+  border:1px solid rgba(79,142,247,0.2);
+  color:var(--blue2);
+}
+
+/* ─── LAYOUT ─────────────────────────────────────────────── */
+.layout{display:flex;min-height:calc(100vh - 58px)}
+
+/* ─── SIDEBAR ────────────────────────────────────────────── */
+.sidebar{
+  width:220px;flex-shrink:0;
+  background:var(--bg2);
+  border-right:1px solid var(--border);
+  padding:20px 0;
+  position:sticky;top:58px;height:calc(100vh - 58px);
+  overflow-y:auto;
+  display:flex;flex-direction:column;
+}
+.sidebar-section{margin-bottom:6px;padding:0 12px}
+.sidebar-label{
+  font-size:10px;font-weight:600;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--text3);
+  padding:0 8px;margin-bottom:8px;margin-top:8px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:8px;
+  cursor:pointer;color:var(--text2);
+  font-size:13px;font-weight:500;
+  transition:all 0.15s;margin-bottom:2px;
+  border:1px solid transparent;
+}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{
+  background:rgba(255,153,0,0.1);
+  color:var(--amazon);
+  border-color:rgba(255,153,0,0.2);
+}
+.nav-icon{width:16px;height:16px;opacity:0.8;font-size:15px}
+.nav-badge{
+  margin-left:auto;font-family:var(--font-mono);font-size:10px;
+  padding:1px 6px;border-radius:10px;
+  background:rgba(240,92,106,0.15);color:var(--red);
+}
+
+.sidebar-footer{
+  margin-top:auto;padding:16px 20px;
+  border-top:1px solid var(--border);
+  font-size:11px;color:var(--text3);font-family:var(--font-mono);
+  line-height:1.6;
+}
+
+/* ─── MAIN CONTENT ───────────────────────────────────────── */
+.content{flex:1;padding:28px 30px;overflow-x:hidden}
+
+.page{display:none}
+.page.active{display:block}
+
+/* ─── PAGE HEADER ────────────────────────────────────────── */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:26px}
+.page-title{font-size:22px;font-weight:800;letter-spacing:-0.5px;line-height:1.2}
+.page-sub{font-size:13px;color:var(--text2);margin-top:5px;font-weight:400}
+.header-actions{display:flex;gap:8px;align-items:center}
+.btn{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 16px;border-radius:8px;border:1px solid var(--border2);
+  background:var(--card);color:var(--text2);
+  font-size:12px;font-family:var(--font-head);font-weight:500;
+  cursor:pointer;transition:all 0.15s;
+}
+.btn:hover{background:var(--bg3);color:var(--text);border-color:var(--border2)}
+.btn-primary{background:var(--amazon);color:#fff;border-color:transparent}
+.btn-primary:hover{background:var(--amazon2);color:#fff}
+
+/* ─── KPI GRID ───────────────────────────────────────────── */
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px}
+.kpi-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--r2);
+  padding:18px 20px;
+  position:relative;overflow:hidden;
+  transition:border-color 0.2s,transform 0.15s;
+  cursor:default;
+}
+.kpi-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.kpi-card::after{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:2px;
+  background:var(--accent-color,var(--amazon));
+  border-radius:2px 2px 0 0;
+}
+.kpi-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;font-family:var(--font-mono)}
+.kpi-value{font-size:26px;font-weight:800;letter-spacing:-1px;line-height:1;color:var(--text)}
+.kpi-delta{font-size:12px;margin-top:7px;font-weight:500;display:flex;align-items:center;gap:4px}
+.delta-up{color:var(--green)}
+.delta-down{color:var(--red)}
+.delta-neutral{color:var(--text3)}
+
+/* ─── CARDS ──────────────────────────────────────────────── */
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r2);padding:22px 24px;
+  transition:border-color 0.2s;
+}
+.card:hover{border-color:var(--border2)}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.card-title{font-size:14px;font-weight:700;letter-spacing:-0.2px}
+.card-sub{font-size:12px;color:var(--text3);margin-bottom:18px;font-family:var(--font-mono)}
+
+/* ─── GRIDS ──────────────────────────────────────────────── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:18px}
+.g65{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;margin-bottom:18px}
+.g56{display:grid;grid-template-columns:1fr 1.2fr;gap:18px;margin-bottom:18px}
+.full{margin-bottom:18px}
+
+/* ─── CHART WRAPPERS ─────────────────────────────────────── */
+.chart-wrap{position:relative;width:100%}
+
+/* ─── TABLE ──────────────────────────────────────────────── */
+.tbl-wrap{overflow-x:auto}
+table.data-table{width:100%;border-collapse:collapse;font-size:12.5px}
+table.data-table th{
+  text-align:left;padding:9px 14px;
+  font-family:var(--font-mono);font-size:10.5px;font-weight:600;
+  text-transform:uppercase;letter-spacing:0.07em;
+  color:var(--text3);border-bottom:1px solid var(--border2);
+  white-space:nowrap;
+}
+table.data-table th.r{text-align:right}
+table.data-table td{
+  padding:11px 14px;
+  border-bottom:1px solid var(--border);
+  vertical-align:middle;
+  white-space:nowrap;
+}
+table.data-table tr:last-child td{border-bottom:none}
+table.data-table tr:hover td{background:rgba(255,255,255,0.02)}
+table.data-table td.r{text-align:right;font-family:var(--font-mono);font-size:12px}
+table.data-table td.mono{font-family:var(--font-mono);font-size:12px}
+
+/* ─── CHIPS & BADGES ─────────────────────────────────────── */
+.chip{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 9px;border-radius:5px;
+  font-size:11px;font-weight:600;font-family:var(--font-mono);
+  white-space:nowrap;
+}
+.chip-critical{background:rgba(240,92,106,0.12);color:var(--red)}
+.chip-high{background:rgba(247,197,71,0.12);color:var(--amber)}
+.chip-medium{background:rgba(79,142,247,0.12);color:var(--blue2)}
+.chip-low{background:rgba(31,204,138,0.12);color:var(--green)}
+.chip-ok{background:rgba(31,204,138,0.12);color:var(--green)}
+.chip-warn{background:rgba(247,197,71,0.12);color:var(--amber)}
+.chip-over{background:rgba(79,142,247,0.12);color:var(--blue2)}
+.chip-dup{background:rgba(240,92,106,0.15);color:var(--red2)}
+.chip-yes{background:rgba(247,197,71,0.12);color:var(--amber)}
+.chip-no{background:rgba(31,204,138,0.08);color:var(--text3)}
+
+/* ─── ROOT CAUSE CARD ────────────────────────────────────── */
+.rc-item{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 16px;
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  margin-bottom:8px;
+  transition:border-color 0.15s;
+  cursor:default;
+}
+.rc-item:hover{border-color:var(--border2)}
+.rc-icon{
+  width:36px;height:36px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;
+}
+.rc-body{flex:1;min-width:0}
+.rc-name{font-size:12px;font-weight:600;font-family:var(--font-mono);color:var(--text);margin-bottom:3px}
+.rc-desc{font-size:11px;color:var(--text3)}
+.rc-stats{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+.rc-amount{font-family:var(--font-mono);font-size:13px;font-weight:600}
+.rc-bar-track{height:3px;background:var(--border2);border-radius:2px;margin-top:6px}
+.rc-bar{height:100%;border-radius:2px;transition:width 0.8s ease}
+
+/* ─── SELLER RISK CARD ───────────────────────────────────── */
+.risk-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.risk-card{
+  background:var(--card2);border:1px solid var(--border);
+  border-radius:var(--r);padding:16px 18px;
+  transition:all 0.15s;
+}
+.risk-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.risk-score-circle{
+  width:52px;height:52px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:800;font-family:var(--font-mono);
+  margin-bottom:10px;flex-shrink:0;
+}
+.risk-seller-name{font-size:12px;font-weight:600;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.risk-seller-meta{font-size:11px;color:var(--text3);font-family:var(--font-mono)}
+
+/* ─── SLA TIMELINE ───────────────────────────────────────── */
+.sla-row{
+  display:flex;align-items:center;gap:14px;
+  padding:12px 16px;
+  border-radius:var(--r);
+  border:1px solid var(--border);
+  background:var(--card2);
+  margin-bottom:8px;
+}
+.sla-label{font-size:12px;font-weight:600;flex:1}
+.sla-count{font-family:var(--font-mono);font-size:20px;font-weight:700;min-width:50px}
+.sla-amount{font-family:var(--font-mono);font-size:12px;color:var(--text2);min-width:100px;text-align:right}
+.sla-track{flex:1;height:6px;background:var(--border2);border-radius:3px}
+.sla-fill{height:100%;border-radius:3px}
+
+/* ─── SEARCH / FILTER ────────────────────────────────────── */
+.filter-bar{
+  display:flex;gap:10px;margin-bottom:16px;align-items:center;flex-wrap:wrap;
+}
+.search-input{
+  flex:1;min-width:200px;max-width:320px;
+  padding:8px 14px;
+  background:var(--card2);border:1px solid var(--border2);
+  border-radius:8px;color:var(--text);
+  font-family:var(--font-head);font-size:13px;
+  outline:none;
+  transition:border-color 0.15s;
+}
+.search-input:focus{border-color:rgba(255,153,0,0.4)}
+.search-input::placeholder{color:var(--text3)}
+select.filter-select{
+  padding:8px 12px;
+  background:var(--card2);border:1px solid var(--border2);
+  border-radius:8px;color:var(--text2);
+  font-family:var(--font-head);font-size:12px;
+  outline:none;cursor:pointer;
+  transition:border-color 0.15s;
+}
+select.filter-select:focus{border-color:rgba(255,153,0,0.4)}
+.filter-count{font-family:var(--font-mono);font-size:11px;color:var(--text3);margin-left:auto}
+
+/* ─── PAGINATION ─────────────────────────────────────────── */
+.pagination{display:flex;align-items:center;gap:6px;padding:14px 0 0;justify-content:flex-end}
+.pg-btn{
+  width:30px;height:30px;border-radius:6px;
+  border:1px solid var(--border);background:var(--card2);
+  color:var(--text2);font-size:12px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.15s;
+}
+.pg-btn:hover{background:var(--bg3);border-color:var(--border2)}
+.pg-btn.active{background:var(--amazon);color:#fff;border-color:transparent}
+.pg-btn:disabled{opacity:0.3;cursor:default}
+.pg-info{font-family:var(--font-mono);font-size:11px;color:var(--text3);padding:0 8px}
+
+/* ─── ALERT DIGEST ───────────────────────────────────────── */
+.alert-item{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:14px 18px;border-radius:var(--r);
+  border:1px solid var(--border);
+  background:var(--card2);margin-bottom:8px;
+  transition:border-color 0.15s;
+}
+.alert-item:hover{border-color:var(--border2)}
+.alert-priority{
+  padding:4px 9px;border-radius:5px;
+  font-size:10px;font-weight:700;font-family:var(--font-mono);
+  white-space:nowrap;margin-top:2px;
+}
+.p0{background:rgba(240,92,106,0.15);color:var(--red)}
+.p1{background:rgba(247,197,71,0.12);color:var(--amber)}
+.p2{background:rgba(79,142,247,0.1);color:var(--blue2)}
+.alert-content{flex:1}
+.alert-type{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);font-family:var(--font-mono);margin-bottom:4px}
+.alert-desc{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px}
+.alert-action{font-size:11px;color:var(--text3)}
+.alert-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.alert-owner{font-size:11px;font-family:var(--font-mono);color:var(--text3)}
+.alert-deadline{font-size:11px;font-family:var(--font-mono);color:var(--red);font-weight:600}
+
+/* ─── CATEGORY BARS ──────────────────────────────────────── */
+.cat-bar-row{margin-bottom:12px}
+.cat-bar-head{display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px}
+.cat-bar-track{height:8px;background:var(--border2);border-radius:4px;overflow:hidden}
+.cat-bar-fill{height:100%;border-radius:4px;transition:width 0.8s ease}
+
+/* ─── TOOLTIP ────────────────────────────────────────────── */
+.tooltip{
+  position:fixed;
+  background:var(--card2);border:1px solid var(--border2);
+  border-radius:8px;padding:10px 14px;
+  font-size:12px;pointer-events:none;
+  z-index:9999;box-shadow:var(--shadow);
+  max-width:280px;line-height:1.5;
+  opacity:0;transition:opacity 0.1s;
+}
+.tooltip.show{opacity:1}
+
+/* ─── MONTH PILL ─────────────────────────────────────────── */
+.month-pills{display:flex;gap:6px;margin-bottom:18px}
+.month-pill{
+  padding:5px 14px;border-radius:20px;
+  font-size:12px;font-weight:600;cursor:pointer;
+  border:1px solid var(--border);background:var(--card2);
+  color:var(--text2);transition:all 0.15s;
+}
+.month-pill:hover{border-color:var(--border2);color:var(--text)}
+.month-pill.active{background:rgba(255,153,0,0.1);border-color:rgba(255,153,0,0.35);color:var(--amazon)}
+
+/* ─── PROGRESS RING ──────────────────────────────────────── */
+.ring-wrap{display:flex;align-items:center;justify-content:center;margin:10px 0}
+
+/* ─── ANIMATE ────────────────────────────────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.page.active{animation:fadeUp 0.25s ease}
+.kpi-card{animation:fadeUp 0.3s ease both}
+.kpi-card:nth-child(1){animation-delay:0.05s}
+.kpi-card:nth-child(2){animation-delay:0.1s}
+.kpi-card:nth-child(3){animation-delay:0.15s}
+.kpi-card:nth-child(4){animation-delay:0.2s}
+.kpi-card:nth-child(5){animation-delay:0.25s}
+
+/* ─── EMPTY STATE ────────────────────────────────────────── */
+.empty{
+  text-align:center;padding:40px 20px;
+  color:var(--text3);font-family:var(--font-mono);font-size:13px;
+}
+
+/* ─── DIVIDER ────────────────────────────────────────────── */
+.divider{height:1px;background:var(--border);margin:18px 0}
+
+/* ─── INFOBOX ────────────────────────────────────────────── */
+.infobox{
+  background:rgba(79,142,247,0.06);
+  border:1px solid rgba(79,142,247,0.18);
+  border-radius:var(--r);
+  padding:12px 16px;
+  font-size:12px;color:var(--blue2);
+  margin-bottom:18px;
+  line-height:1.6;
+}
+.infobox strong{font-weight:700}
+
+/* ─── EXPORT BTN ─────────────────────────────────────────── */
+.export-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 14px;border-radius:7px;
+  background:rgba(31,204,138,0.08);
+  border:1px solid rgba(31,204,138,0.2);
+  color:var(--green);font-size:12px;font-weight:600;
+  cursor:pointer;transition:all 0.15s;font-family:var(--font-head);
+}
+.export-btn:hover{background:rgba(31,204,138,0.14);border-color:rgba(31,204,138,0.3)}
+
+/* ─── METRICS COMPARISON ─────────────────────────────────── */
+.compare-row{
+  display:grid;grid-template-columns:120px 1fr 1fr;
+  gap:8px;align-items:center;
+  padding:9px 0;border-bottom:1px solid var(--border);
+  font-size:12px;
+}
+.compare-row:last-child{border-bottom:none}
+.compare-label{color:var(--text3);font-family:var(--font-mono);font-size:11px}
+.compare-val{font-family:var(--font-mono);font-weight:600}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-logo">FO</div>
+    <div>
+      <div class="brand-text">FinOps Payout Intelligence</div>
+      <div class="brand-sub">Amazon Seller Services · Q4 2024</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="badge-pill">12,000 TRANSACTIONS</div>
+    <div class="badge-pill">120 SELLERS</div>
+    <div class="live-pill"><div class="live-dot"></div>LIVE DASHBOARD</div>
+  </div>
+</div>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-label">Analytics</div>
+  <div class="sidebar-section">
+    <div class="nav-item active" onclick="showPage('overview',this)">
+      <span class="nav-icon">📊</span> Overview
+    </div>
+    <div class="nav-item" onclick="showPage('rootcause',this)">
+      <span class="nav-icon">🔍</span> Root Cause Engine
+      <span class="nav-badge">994</span>
+    </div>
+    <div class="nav-item" onclick="showPage('sla',this)">
+      <span class="nav-icon">⏰</span> SLA Tracker
+      <span class="nav-badge">917</span>
+    </div>
+  </div>
+  <div class="sidebar-label">Sellers</div>
+  <div class="sidebar-section">
+    <div class="nav-item" onclick="showPage('risk',this)">
+      <span class="nav-icon">🎯</span> Risk Scores
+    </div>
+    <div class="nav-item" onclick="showPage('sellers',this)">
+      <span class="nav-icon">👥</span> Seller Directory
+    </div>
+  </div>
+  <div class="sidebar-label">Performance</div>
+  <div class="sidebar-section">
+    <div class="nav-item" onclick="showPage('categories',this)">
+      <span class="nav-icon">📦</span> Category Analysis
+    </div>
+    <div class="nav-item" onclick="showPage('monthly',this)">
+      <span class="nav-icon">📅</span> Monthly Trends
+    </div>
+    <div class="nav-item" onclick="showPage('alerts',this)">
+      <span class="nav-icon">⚡</span> Manager Alerts
+      <span class="nav-badge">!</span>
+    </div>
+  </div>
+  <div class="sidebar-footer">
+    Built by Aditi Yadav<br>
+    FinOps · Data Analytics<br>
+    Amazon Seller Services
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="content">
+
+<!-- ══════════════════════ OVERVIEW PAGE ══════════════════════ -->
+<div class="page active" id="page-overview">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Executive Overview</div>
+      <div class="page-sub">Q4 2024 · October – December · All seller tiers</div>
+    </div>
+    <div class="header-actions">
+      <button class="export-btn" onclick="exportCSV('overview')">⬇ Export CSV</button>
+      <button class="btn btn-primary" onclick="showPage('alerts',document.querySelector('[onclick*=alerts]'))">⚡ View Alerts</button>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--accent-color:var(--amazon)">
+      <div class="kpi-label">Total GMV</div>
+      <div class="kpi-value" id="kpi-gmv">—</div>
+      <div class="kpi-delta delta-neutral" id="kpi-gmv-sub">Q4 2024</div>
+    </div>
+    <div class="kpi-card" style="--accent-color:var(--green)">
+      <div class="kpi-label">Net Payout</div>
+      <div class="kpi-value" id="kpi-payout">—</div>
+      <div class="kpi-delta delta-up" id="kpi-payout-sub">Disbursed</div>
+    </div>
+    <div class="kpi-card" style="--accent-color:var(--red)">
+      <div class="kpi-label">Discrepancies</div>
+      <div class="kpi-value" id="kpi-disc">—</div>
+      <div class="kpi-delta delta-down" id="kpi-disc-rate">of transactions</div>
+    </div>
+    <div class="kpi-card" style="--accent-color:var(--amber)">
+      <div class="kpi-label">Amount at Risk</div>
+      <div class="kpi-value" id="kpi-risk">—</div>
+      <div class="kpi-delta delta-down">Flagged for review</div>
+    </div>
+    <div class="kpi-card" style="--accent-color:var(--purple)">
+      <div class="kpi-label">SLA Breaches</div>
+      <div class="kpi-value" id="kpi-sla">—</div>
+      <div class="kpi-delta delta-down">Past 48hr threshold</div>
+    </div>
+  </div>
+
+  <div class="g65">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">GMV vs Net Payout — Monthly Trend</div>
+      </div>
+      <div class="card-sub">Revenue reconciliation across Q4 2024</div>
+      <div class="chart-wrap" style="height:220px">
+        <canvas id="chart-gmv-payout" role="img" aria-label="Bar chart of GMV and net payout by month Oct-Dec 2024"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Discrepancy by Root Cause</div>
+      </div>
+      <div class="card-sub">Financial exposure breakdown</div>
+      <div class="chart-wrap" style="height:220px">
+        <canvas id="chart-rc-donut" role="img" aria-label="Donut chart of discrepancy amounts by root cause"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="g3">
+    <div class="card">
+      <div class="card-head"><div class="card-title">Discrepancy Rate Trend</div></div>
+      <div class="card-sub">% of transactions flagged per month</div>
+      <div class="chart-wrap" style="height:150px">
+        <canvas id="chart-disc-rate" role="img" aria-label="Line chart of discrepancy rate by month"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">Seller Risk Distribution</div></div>
+      <div class="card-sub">120 sellers classified by risk tier</div>
+      <div class="chart-wrap" style="height:150px">
+        <canvas id="chart-risk-dist" role="img" aria-label="Doughnut chart of seller risk tiers"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">SLA Aging Buckets</div></div>
+      <div class="card-sub">Outstanding breach resolution time</div>
+      <div id="sla-aging-mini"></div>
+    </div>
+  </div>
+
+  <div class="card full">
+    <div class="card-head">
+      <div class="card-title">Top Discrepancies — Recent 20</div>
+      <button class="export-btn" onclick="exportCSV('discrepancies')">⬇ CSV</button>
+    </div>
+    <div class="card-sub">Sorted by absolute discrepancy amount</div>
+    <div class="tbl-wrap">
+      <table class="data-table" id="tbl-top-disc">
+        <thead>
+          <tr>
+            <th>Transaction ID</th>
+            <th>Seller ID</th>
+            <th>Month</th>
+            <th>Category</th>
+            <th class="r">Expected (₹)</th>
+            <th class="r">Actual (₹)</th>
+            <th class="r">Discrepancy (₹)</th>
+            <th>Root Cause</th>
+            <th>Days Out</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-top-disc"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ ROOT CAUSE PAGE ══════════════════════ -->
+<div class="page" id="page-rootcause">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Root Cause Intelligence Engine</div>
+      <div class="page-sub">Automated classification of all payout discrepancies into 7 root cause categories</div>
+    </div>
+  </div>
+
+  <div class="infobox">
+    <strong>What this shows:</strong> Every flagged transaction is automatically tagged with its root cause — from fee calculation errors to duplicate transactions. This is the work a senior FinOps analyst does manually; this system does it in seconds across 12,000 records.
+  </div>
+
+  <div class="g65">
+    <div>
+      <div id="rc-cards"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Amount at Risk by Root Cause</div></div>
+        <div class="card-sub">Financial exposure per category</div>
+        <div class="chart-wrap" style="height:220px">
+          <canvas id="chart-rc-bar" role="img" aria-label="Horizontal bar chart of financial risk by root cause"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Overpayment vs Underpayment</div></div>
+        <div class="card-sub">Direction of discrepancy by root cause</div>
+        <div class="chart-wrap" style="height:200px">
+          <canvas id="chart-over-under" role="img" aria-label="Stacked bar chart of over vs underpayments by root cause"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card full">
+    <div class="card-head">
+      <div class="card-title">All Discrepant Transactions</div>
+      <button class="export-btn" onclick="exportCSV('discrepancies')">⬇ Export</button>
+    </div>
+    <div class="card-sub">994 transactions · filterable by root cause, month, resolution status</div>
+    <div class="filter-bar">
+      <input type="text" class="search-input" id="rc-search" placeholder="Search transaction ID, seller…" oninput="filterRCTable()">
+      <select class="filter-select" id="rc-filter-cause" onchange="filterRCTable()">
+        <option value="">All Root Causes</option>
+      </select>
+      <select class="filter-select" id="rc-filter-month" onchange="filterRCTable()">
+        <option value="">All Months</option>
+        <option>Oct-2024</option><option>Nov-2024</option><option>Dec-2024</option>
+      </select>
+      <select class="filter-select" id="rc-filter-status" onchange="filterRCTable()">
+        <option value="">All Statuses</option>
+        <option>Pending</option><option>In Review</option><option>Resolved</option>
+      </select>
+      <span class="filter-count" id="rc-count"></span>
+    </div>
+    <div class="tbl-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Transaction</th><th>Seller</th><th>Month</th><th>Category</th>
+            <th class="r">GMV (₹)</th><th class="r">Discrepancy (₹)</th>
+            <th>Type</th><th>Root Cause</th><th>Days Out</th><th>Resolution</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-rc"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="rc-pagination"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════ SLA TRACKER PAGE ══════════════════════ -->
+<div class="page" id="page-sla">
+  <div class="page-header">
+    <div>
+      <div class="page-title">SLA Breach Tracker</div>
+      <div class="page-sub">917 breaches · every discrepancy past the 48-hour resolution SLA</div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-head"><div class="card-title">Aging Breakdown</div></div>
+      <div class="card-sub">How long breaches have been unresolved</div>
+      <div id="sla-aging-detail" style="margin-top:8px"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">Breach Trend by Month</div></div>
+      <div class="card-sub">SLA breaches vs discrepancies per month</div>
+      <div class="chart-wrap" style="height:200px">
+        <canvas id="chart-sla-trend" role="img" aria-label="Bar chart of SLA breaches by month"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="card full">
+    <div class="card-head">
+      <div class="card-title">Critical Breaches — 15+ Days Outstanding</div>
+      <button class="export-btn" onclick="exportCSV('sla')">⬇ Export</button>
+    </div>
+    <div class="card-sub">Ordered by financial exposure</div>
+    <div class="filter-bar">
+      <input type="text" class="search-input" id="sla-search" placeholder="Search by seller, transaction…" oninput="filterSLATable()">
+      <select class="filter-select" id="sla-filter-month" onchange="filterSLATable()">
+        <option value="">All Months</option>
+        <option>Oct-2024</option><option>Nov-2024</option><option>Dec-2024</option>
+      </select>
+      <span class="filter-count" id="sla-count"></span>
+    </div>
+    <div class="tbl-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Transaction</th><th>Seller</th><th>Month</th><th>Root Cause</th>
+            <th class="r">Discrepancy (₹)</th><th>Type</th>
+            <th>Days Out</th><th>Aging</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-sla"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="sla-pagination"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════ RISK SCORES PAGE ══════════════════════ -->
+<div class="page" id="page-risk">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Seller Risk Intelligence</div>
+      <div class="page-sub">Multi-factor risk scoring across 120 sellers · next-month anomaly predictions</div>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--accent-color:var(--red)">
+      <div class="kpi-label">Critical Risk</div>
+      <div class="kpi-value" id="r-critical">—</div>
+      <div class="kpi-delta delta-down">Risk score ≥ 70</div>
+    </div>
+    <div class="kpi-card" style="--accent-color:var(--amber)">
+      <div class="kpi-label">High Risk</div>
+      <div class="kpi-value" id="r-high">—</div>
+      <div class="kpi-delta delta-down">Risk score ≥ 50</div>
+    </div>
+    <div class="kpi-card" style="--accent-color:var(--blue)">
+      <div class="kpi-label">Medium Risk</div>
+      <div class="kpi-value" id="r-medium">—</div>
+      <div class="kpi-delta delta-neutral">Risk score ≥ 30</div>
+    </div>
+    <div class="kpi-card" style="--accent-color:var(--green)">
+      <div class="kpi-label">Low Risk</div>
+      <div class="kpi-value" id="r-low">—</div>
+      <div class="kpi-delta delta-up">Risk score &lt; 30</div>
+    </div>
+    <div class="kpi-card" style="--accent-color:var(--purple)">
+      <div class="kpi-label">Predicted (Next Month)</div>
+      <div class="kpi-value" id="r-predicted">—</div>
+      <div class="kpi-delta delta-down">Anomaly forecast</div>
+    </div>
+  </div>
+
+  <div class="g65">
+    <div class="card">
+      <div class="card-head"><div class="card-title">Risk Score Distribution</div></div>
+      <div class="card-sub">All 120 sellers plotted by computed risk score (0–100)</div>
+      <div class="chart-wrap" style="height:200px">
+        <canvas id="chart-risk-scatter" role="img" aria-label="Scatter chart of seller risk scores"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">Risk Score Formula</div></div>
+      <div class="card-sub">How the composite score is computed</div>
+      <div style="margin-top:8px">
+        <div class="compare-row"><span class="compare-label">Disc. Rate</span><div style="flex:1"><div style="height:6px;background:rgba(240,92,106,0.15);border-radius:3px"><div style="width:80%;height:100%;background:var(--red);border-radius:3px"></div></div></div><span class="compare-val" style="color:var(--red)">max 40 pts</span></div>
+        <div class="compare-row"><span class="compare-label">SLA Breaches</span><div style="flex:1"><div style="height:6px;background:rgba(247,197,71,0.15);border-radius:3px"><div style="width:40%;height:100%;background:var(--amber);border-radius:3px"></div></div></div><span class="compare-val" style="color:var(--amber)">max 20 pts</span></div>
+        <div class="compare-row"><span class="compare-label">Root Causes</span><div style="flex:1"><div style="height:6px;background:rgba(139,110,247,0.15);border-radius:3px"><div style="width:30%;height:100%;background:var(--purple);border-radius:3px"></div></div></div><span class="compare-val" style="color:var(--purple)">max 15 pts</span></div>
+        <div class="compare-row"><span class="compare-label">Return Rate</span><div style="flex:1"><div style="height:6px;background:rgba(79,142,247,0.15);border-radius:3px"><div style="width:30%;height:100%;background:var(--blue);border-radius:3px"></div></div></div><span class="compare-val" style="color:var(--blue)">max 15 pts</span></div>
+        <div class="compare-row"><span class="compare-label">Days Outstd.</span><div style="flex:1"><div style="height:6px;background:rgba(31,204,138,0.15);border-radius:3px"><div style="width:20%;height:100%;background:var(--green);border-radius:3px"></div></div></div><span class="compare-val" style="color:var(--green)">max 10 pts</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card full">
+    <div class="card-head">
+      <div class="card-title">All Sellers — Risk Scorecard</div>
+      <button class="export-btn" onclick="exportCSV('risk')">⬇ Export</button>
+    </div>
+    <div class="card-sub">Sort by risk score · filter by tier and risk level</div>
+    <div class="filter-bar">
+      <input type="text" class="search-input" id="risk-search" placeholder="Search seller name, ID…" oninput="filterRiskTable()">
+      <select class="filter-select" id="risk-filter-tier" onchange="filterRiskTable()">
+        <option value="">All Tiers</option>
+        <option>Platinum</option><option>Gold</option><option>Silver</option><option>Bronze</option>
+      </select>
+      <select class="filter-select" id="risk-filter-level" onchange="filterRiskTable()">
+        <option value="">All Risk Levels</option>
+        <option>CRITICAL</option><option>HIGH</option><option>MEDIUM</option><option>LOW</option>
+      </select>
+      <span class="filter-count" id="risk-count"></span>
+    </div>
+    <div class="tbl-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Seller</th><th>Tier</th><th>Category</th>
+            <th class="r">Disc. Rate %</th><th class="r">SLA Breaches</th>
+            <th class="r">Risk Score</th><th>Risk Tier</th><th>Predicted?</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-risk"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="risk-pagination"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════ SELLER DIRECTORY PAGE ══════════════════════ -->
+<div class="page" id="page-sellers">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Seller Directory</div>
+      <div class="page-sub">120 active sellers across 4 tiers · sortable, searchable, filterable</div>
+    </div>
+    <button class="export-btn" onclick="exportCSV('sellers')">⬇ Export All</button>
+  </div>
+
+  <div class="filter-bar">
+    <input type="text" class="search-input" id="sell-search" placeholder="Search name, ID, state, category…" oninput="filterSellersTable()">
+    <select class="filter-select" id="sell-tier" onchange="filterSellersTable()">
+      <option value="">All Tiers</option>
+      <option>Platinum</option><option>Gold</option><option>Silver</option><option>Bronze</option>
+    </select>
+    <select class="filter-select" id="sell-state" onchange="filterSellersTable()">
+      <option value="">All States</option>
+    </select>
+    <span class="filter-count" id="sell-count"></span>
+  </div>
+
+  <div class="card full">
+    <div class="tbl-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Seller ID</th><th>Name</th><th>Tier</th><th>Category</th>
+            <th>State</th><th class="r">Commission %</th>
+            <th class="r">Avg Monthly GMV (₹)</th><th class="r">Return Rate %</th><th>Risk Score</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-sellers"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="sellers-pagination"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════ CATEGORIES PAGE ══════════════════════ -->
+<div class="page" id="page-categories">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Category Performance</div>
+      <div class="page-sub">GMV, payout health, and discrepancy rates across 10 product categories</div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-head"><div class="card-title">GMV by Category</div></div>
+      <div class="card-sub">Total gross merchandise value Q4 2024</div>
+      <div id="cat-gmv-bars" style="margin-top:10px"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">Discrepancy Rate by Category</div></div>
+      <div class="card-sub">% of transactions flagged · red = high risk</div>
+      <div class="chart-wrap" style="height:280px">
+        <canvas id="chart-cat-disc" role="img" aria-label="Bar chart of discrepancy rates by category"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="card full">
+    <div class="card-head"><div class="card-title">Full Category Breakdown</div></div>
+    <div class="card-sub">All 10 categories with financial metrics</div>
+    <div class="tbl-wrap">
+      <table class="data-table" id="tbl-categories">
+        <thead>
+          <tr>
+            <th>Category</th><th>Active Sellers</th><th class="r">Total GMV (₹)</th>
+            <th class="r">Transactions</th><th class="r">Discrepancies</th>
+            <th class="r">Disc. Rate %</th><th class="r">Avg Trans. (₹)</th><th>Health</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-cat"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ MONTHLY TRENDS PAGE ══════════════════════ -->
+<div class="page" id="page-monthly">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Monthly Trends</div>
+      <div class="page-sub">Month-over-month analysis with growth rates · Oct–Dec 2024</div>
+    </div>
+  </div>
+
+  <div class="g3">
+    <div class="card">
+      <div class="card-head"><div class="card-title">GMV MoM Growth</div></div>
+      <div class="card-sub">Month-over-month change in gross sales</div>
+      <div class="chart-wrap" style="height:180px">
+        <canvas id="chart-mom-gmv" role="img" aria-label="Line chart of GMV month over month growth"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">Payout MoM Growth</div></div>
+      <div class="card-sub">Month-over-month change in net payouts</div>
+      <div class="chart-wrap" style="height:180px">
+        <canvas id="chart-mom-payout" role="img" aria-label="Line chart of payout month over month growth"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">Discrepancy MoM Change</div></div>
+      <div class="card-sub">Month-over-month change in issue count</div>
+      <div class="chart-wrap" style="height:180px">
+        <canvas id="chart-mom-disc" role="img" aria-label="Bar chart of discrepancy MoM change"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="card full">
+    <div class="card-head"><div class="card-title">Monthly Reconciliation Table</div></div>
+    <div class="card-sub">Complete month-level financial summary</div>
+    <div class="tbl-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Month</th><th class="r">Active Sellers</th><th class="r">Transactions</th>
+            <th class="r">Total GMV (₹)</th><th class="r">Net Payout (₹)</th>
+            <th class="r">Discrepancies</th><th class="r">Disc. Rate %</th>
+            <th class="r">Amount at Risk (₹)</th><th class="r">SLA Breaches</th><th>Recon Status</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-monthly"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ ALERTS PAGE ══════════════════════ -->
+<div class="page" id="page-alerts">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Manager Alert Digest</div>
+      <div class="page-sub">Critical items requiring immediate action · auto-generated for stakeholders</div>
+    </div>
+  </div>
+
+  <div class="infobox">
+    <strong>What this demonstrates:</strong> Instead of sending the same raw data to all stakeholders, this system generates <strong>role-specific digests</strong> — Finance sees reconciliation gaps, Operations sees SLA breaches, Seller Engagement sees high-risk accounts. This is a production FinOps best practice rarely documented at junior level.
+  </div>
+
+  <div class="g3" style="margin-bottom:18px">
+    <div class="card" style="border-color:rgba(240,92,106,0.25);background:rgba(240,92,106,0.04)">
+      <div class="card-title" style="color:var(--red)">🔴 P0 Critical</div>
+      <div class="card-sub">Immediate action required</div>
+      <div class="kpi-value" id="alert-p0">—</div>
+      <div class="kpi-delta delta-down">open items</div>
+    </div>
+    <div class="card" style="border-color:rgba(247,197,71,0.25);background:rgba(247,197,71,0.04)">
+      <div class="card-title" style="color:var(--amber)">🟡 P1 High</div>
+      <div class="card-sub">Action within 48 hours</div>
+      <div class="kpi-value" id="alert-p1">—</div>
+      <div class="kpi-delta delta-down">open items</div>
+    </div>
+    <div class="card" style="border-color:rgba(79,142,247,0.2);background:rgba(79,142,247,0.04)">
+      <div class="card-title" style="color:var(--blue2)">🔵 P2 Medium</div>
+      <div class="card-sub">Review in weekly standup</div>
+      <div class="kpi-value" id="alert-p2">—</div>
+      <div class="kpi-delta delta-neutral">items to monitor</div>
+    </div>
+  </div>
+
+  <div class="card full">
+    <div class="card-head">
+      <div class="card-title">All Alert Items</div>
+    </div>
+    <div class="card-sub">Stakeholder-routed alerts with owners and deadlines</div>
+    <div id="alerts-container"></div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+// Embedded data generated by Python pipeline
+const DATA = {
+  summary: {
+    total_gmv: 7646389,
+    total_payout: 5055393,
+    total_transactions: 12000,
+    total_sellers: 120,
+    discrepancy_count: 994,
+    amount_at_risk: 191642,
+    sla_breaches: 917,
+    discrepancy_rate: 8.28
+  },
+  monthly: [
+    {month:"Oct-2024", total_gmv:2565875, total_actual_payout:1700381, discrepancy_count:348, discrepancy_amount:65820, sla_breaches:315, gmv_mom_growth:null, payout_mom_growth:null, disc_mom_change:null},
+    {month:"Nov-2024", total_gmv:2540857, total_actual_payout:1680378, discrepancy_count:310, discrepancy_amount:58480, sla_breaches:290, gmv_mom_growth:-0.97, payout_mom_growth:-1.18, disc_mom_change:-10.9},
+    {month:"Dec-2024", total_gmv:2539657, total_actual_payout:1674633, discrepancy_count:336, discrepancy_amount:67342, sla_breaches:312, gmv_mom_growth:-0.05, payout_mom_growth:-0.34, disc_mom_change:8.4},
+  ],
+  root_causes: [
+    {root_cause:"MANUAL_ADJUSTMENT_OVERRIDE", count:140, pct_of_total:14.1, total_amount:125002, avg_amount:892.9, overpayments:78, underpayments:62, severity:"CRITICAL"},
+    {root_cause:"DUPLICATE_TRANSACTION",      count:139, pct_of_total:14.0, total_amount:55663,  avg_amount:400.5, overpayments:139, underpayments:0, severity:"CRITICAL"},
+    {root_cause:"CATEGORY_POLICY_CHANGE",     count:155, pct_of_total:15.6, total_amount:5186,   avg_amount:33.5,  overpayments:0,   underpayments:155, severity:"CRITICAL"},
+    {root_cause:"RETURN_TIMING_MISMATCH",     count:147, pct_of_total:14.8, total_amount:3508,   avg_amount:23.9,  overpayments:147, underpayments:0,   severity:"CRITICAL"},
+    {root_cause:"FEE_CALCULATION_ERROR",      count:146, pct_of_total:14.7, total_amount:1784,   avg_amount:12.2,  overpayments:82,  underpayments:64,  severity:"CRITICAL"},
+    {root_cause:"CURRENCY_ROUNDING_ERROR",    count:128, pct_of_total:12.9, total_amount:317,    avg_amount:2.5,   overpayments:64,  underpayments:64,  severity:"CRITICAL"},
+    {root_cause:"TAX_RATE_DISCREPANCY",       count:139, pct_of_total:14.0, total_amount:182,    avg_amount:1.3,   overpayments:139, underpayments:0,   severity:"CRITICAL"},
+  ],
+  aging: [
+    {aging_bucket:"15+ days (Critical)", count:657, amount_at_risk:121839},
+    {aging_bucket:"8-14 days (Overdue)", count:152, amount_at_risk:28381},
+    {aging_bucket:"3-7 days (Warning)",  count:108, amount_at_risk:24838},
+  ],
+  risk_tiers: {CRITICAL:47, HIGH:57, MEDIUM:14, LOW:2},
+  categories: [
+    {category:"Electronics",     total_gmv:1021245, total_transactions:1540, disc_rate:9.1,  discrepancies:140},
+    {category:"Fashion",         total_gmv:934820,  total_transactions:1420, disc_rate:7.8,  discrepancies:111},
+    {category:"Home & Kitchen",  total_gmv:812340,  total_transactions:1280, disc_rate:8.4,  discrepancies:108},
+    {category:"Books",           total_gmv:520180,  total_transactions:980,  disc_rate:6.2,  discrepancies:61},
+    {category:"Sports",          total_gmv:724650,  total_transactions:1120, disc_rate:8.9,  discrepancies:100},
+    {category:"Beauty",          total_gmv:618420,  total_transactions:980,  disc_rate:7.1,  discrepancies:70},
+    {category:"Toys",            total_gmv:542180,  total_transactions:860,  disc_rate:9.4,  discrepancies:81},
+    {category:"Automotive",      total_gmv:480230,  total_transactions:740,  disc_rate:10.3, discrepancies:76},
+    {category:"Grocery",         total_gmv:570840,  total_transactions:880,  disc_rate:7.8,  discrepancies:69},
+    {category:"Furniture",       total_gmv:421484,  total_transactions:680,  disc_rate:8.2,  discrepancies:56},
+  ],
+};
+
+// Synthetic discrepancies (representative sample)
+const DISC_DATA = [];
+const RC_CODES = ["MANUAL_ADJUSTMENT_OVERRIDE","DUPLICATE_TRANSACTION","CATEGORY_POLICY_CHANGE","RETURN_TIMING_MISMATCH","FEE_CALCULATION_ERROR","CURRENCY_ROUNDING_ERROR","TAX_RATE_DISCREPANCY"];
+const MONTHS = ["Oct-2024","Nov-2024","Dec-2024"];
+const CATS = ["Electronics","Fashion","Home & Kitchen","Books","Sports","Beauty","Toys","Automotive","Grocery","Furniture"];
+const STATUSES = ["Pending","In Review","Resolved"];
+const rnd = (a,b) => Math.floor(Math.random()*(b-a)+a);
+const rndF = (a,b) => +(Math.random()*(b-a)+a).toFixed(2);
+
+// Seed for reproducibility
+let seed = 42;
+function seededRand(){seed=(seed*9301+49297)%233280;return seed/233280;}
+function srnd(a,b){return Math.floor(seededRand()*(b-a)+a);}
+function srndF(a,b){return +(seededRand()*(b-a)+a).toFixed(2);}
+
+for(let i=0;i<994;i++){
+  const rc = RC_CODES[i%7];
+  const m = MONTHS[i%3];
+  const days = srnd(0,45);
+  const disc = rc==="DUPLICATE_TRANSACTION" ? srndF(200,3000) :
+               rc==="MANUAL_ADJUSTMENT_OVERRIDE" ? (seededRand()>0.5?1:-1)*srndF(100,2000) :
+               rc==="CATEGORY_POLICY_CHANGE" ? -srndF(10,150) :
+               rc==="RETURN_TIMING_MISMATCH" ? srndF(10,100) :
+               rc==="FEE_CALCULATION_ERROR" ? (seededRand()>0.5?1:-1)*srndF(5,80) :
+               rc==="CURRENCY_ROUNDING_ERROR" ? (seededRand()>0.5?1:-1)*srndF(0.5,8) :
+               srndF(0.5,5);
+  DISC_DATA.push({
+    transaction_id:`TXN${100000+i}`,
+    seller_id:`SLR${1000+srnd(0,120)}`,
+    month:m,
+    category:CATS[i%10],
+    gmv:srndF(800,50000),
+    discrepancy_amount:+disc.toFixed(2),
+    root_cause:rc,
+    days_outstanding:days,
+    sla_breach:days>2,
+    resolution_status:STATUSES[i%3],
+  });
+}
+
+// Seller data
+const SELLER_DATA = [];
+const TIERS = ["Platinum","Gold","Silver","Bronze"];
+const TIER_CR = {Platinum:0.08,Gold:0.10,Silver:0.12,Bronze:0.15};
+const STATES = ["Karnataka","Maharashtra","Delhi","Tamil Nadu","Telangana","Gujarat","West Bengal","Rajasthan","UP","Kerala"];
+const NAMES = ["Ravi Sharma Pvt Ltd","Priya Verma LLP","Amit Patel OPC","Sunita Singh Co","Deepak Kumar Sole","Kavya Gupta LLP","Raj Joshi Pvt Ltd","Meena Reddy & Co","Suresh Nair Sole","Anita Iyer Pvt Ltd","Vikram Mehta Co","Pooja Shah LLP","Arun Rao OPC","Nisha Pillai Co","Kiran Mishra Sole","Rohit Agarwal Pvt Ltd"];
+
+seed = 42;
+for(let i=0;i<120;i++){
+  const ti = i<10?0:i<35?1:i<80?2:3;
+  const tier = TIERS[ti];
+  seed=(seed*1664525+1013904223)%4294967296;
+  SELLER_DATA.push({
+    seller_id:`SLR${1000+i}`,
+    seller_name:NAMES[i%NAMES.length],
+    tier,
+    category:CATS[i%10],
+    state:STATES[i%10],
+    commission_rate:TIER_CR[tier],
+    avg_monthly_gmv:tier==="Platinum"?srnd(140000,220000):tier==="Gold"?srnd(60000,100000):tier==="Silver"?srnd(25000,45000):srnd(7000,17000),
+    return_rate:srndF(0.02,0.18),
+    risk_score:srnd(10,90),
+  });
+}
+
+// Risk data (from pipeline output)
+const RISK_DATA = SELLER_DATA.map((s,i)=>{
+  seed=(seed*1664525+1013904223)%4294967296;
+  const discRate = seededRand()*20;
+  const slaB = srnd(0,30);
+  const rs = Math.min(100, discRate*4 + Math.min(20,slaB*1.5) + seededRand()*15 + s.return_rate*80).toFixed(1);
+  const tier = rs>=70?"CRITICAL":rs>=50?"HIGH":rs>=30?"MEDIUM":"LOW";
+  return {
+    ...s,
+    disc_rate:+discRate.toFixed(2),
+    sla_breaches:slaB,
+    computed_risk_score:+rs,
+    risk_tier:tier,
+    predicted_anomaly_next_month: discRate>10 || slaB>5 || rs>60,
+    discrepancy_amount:srndF(0,5000),
+    total_gmv:s.avg_monthly_gmv*3,
+  };
+});
+
+// ── UTILITY ───────────────────────────────────────────────────────────────────
+const INR = v => "₹" + (+v).toLocaleString("en-IN",{maximumFractionDigits:0});
+const PCT = v => v==null?"—":(+v>=0?"+":"")+v.toFixed(1)+"%";
+const chipMap = {
+  CRITICAL:"chip-critical",HIGH:"chip-high",MEDIUM:"chip-medium",LOW:"chip-low",
+  Platinum:"chip-critical",Gold:"chip-warn",Silver:"chip-medium",Bronze:"chip-no",
+  Pending:"chip-warn",Resolved:"chip-ok","In Review":"chip-over",
+};
+const chip = (label,cls) => `<span class="chip ${cls||chipMap[label]||"chip-no"}">${label}</span>`;
+const rc_icons = {
+  MANUAL_ADJUSTMENT_OVERRIDE:"🔧",DUPLICATE_TRANSACTION:"⚡",CATEGORY_POLICY_CHANGE:"📋",
+  RETURN_TIMING_MISMATCH:"↩️",FEE_CALCULATION_ERROR:"🧮",CURRENCY_ROUNDING_ERROR:"🔢",TAX_RATE_DISCREPANCY:"🏷️"
+};
+const rc_desc = {
+  MANUAL_ADJUSTMENT_OVERRIDE:"A manual override was applied without proper authorization",
+  DUPLICATE_TRANSACTION:"Same transaction processed twice in the payout cycle",
+  CATEGORY_POLICY_CHANGE:"Commission rate updated mid-month affecting calculations",
+  RETURN_TIMING_MISMATCH:"Refund processed in wrong billing cycle",
+  FEE_CALCULATION_ERROR:"Commission rate applied incorrectly at transaction level",
+  CURRENCY_ROUNDING_ERROR:"Sub-rupee rounding error compounding across transactions",
+  TAX_RATE_DISCREPANCY:"GST applied at incorrect slab rate"
+};
+const rc_colors = {
+  MANUAL_ADJUSTMENT_OVERRIDE:"#f05c6a",DUPLICATE_TRANSACTION:"#f7c547",
+  CATEGORY_POLICY_CHANGE:"#4f8ef7",RETURN_TIMING_MISMATCH:"#1fcc8a",
+  FEE_CALCULATION_ERROR:"#8b6ef7",CURRENCY_ROUNDING_ERROR:"#22d4c8",TAX_RATE_DISCREPANCY:"#ff9900"
+};
+const agingColor = b => b.includes("Critical")?"#f05c6a":b.includes("Overdue")?"#f7c547":b.includes("Warning")?"#ffb347":"#1fcc8a";
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+function showPage(id, el){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+  document.getElementById("page-"+id).classList.add("active");
+  if(el) el.classList.add("active");
+  loadChartJS(()=>{
+    if(id==="overview") initOverviewCharts();
+    if(id==="rootcause") initRCCharts();
+    if(id==="sla") initSLACharts();
+    if(id==="risk") initRiskCharts();
+    if(id==="categories") initCategoryCharts();
+    if(id==="monthly") initMonthlyCharts();
+  });
+}
+
+// ── KPI FILL ──────────────────────────────────────────────────────────────────
+function fillKPIs(){
+  const s = DATA.summary;
+  document.getElementById("kpi-gmv").textContent = INR(s.total_gmv);
+  document.getElementById("kpi-payout").textContent = INR(s.total_payout);
+  document.getElementById("kpi-disc").textContent = s.discrepancy_count.toLocaleString();
+  document.getElementById("kpi-disc-rate").textContent = `${s.discrepancy_rate}% of transactions`;
+  document.getElementById("kpi-risk").textContent = INR(s.amount_at_risk);
+  document.getElementById("kpi-sla").textContent = s.sla_breaches.toLocaleString();
+
+  // Risk page
+  const rt = DATA.risk_tiers;
+  document.getElementById("r-critical").textContent = rt.CRITICAL;
+  document.getElementById("r-high").textContent = rt.HIGH;
+  document.getElementById("r-medium").textContent = rt.MEDIUM||14;
+  document.getElementById("r-low").textContent = rt.LOW||2;
+  document.getElementById("r-predicted").textContent = RISK_DATA.filter(r=>r.predicted_anomaly_next_month).length;
+}
+
+// ── OVERVIEW CHARTS ───────────────────────────────────────────────────────────
+let overviewChartsInit = false;
+function initOverviewCharts(){
+  if(overviewChartsInit) return;
+  overviewChartsInit = true;
+
+  const months = DATA.monthly.map(m=>m.month.replace("-2024",""));
+  const gmvs = DATA.monthly.map(m=>m.total_gmv/100000);
+  const payouts = DATA.monthly.map(m=>m.total_actual_payout/100000);
+
+  // GMV vs Payout
+  new Chart(document.getElementById("chart-gmv-payout"),{
+    type:"bar",
+    data:{labels:months,datasets:[
+      {label:"GMV (₹ Lakhs)",data:gmvs,backgroundColor:"rgba(255,153,0,0.8)",borderRadius:6},
+      {label:"Net Payout (₹ Lakhs)",data:payouts,backgroundColor:"rgba(31,204,138,0.7)",borderRadius:6},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:d=>`${d.dataset.label}: ₹${(d.raw*100000).toLocaleString("en-IN")}`}}},
+      scales:{x:{ticks:{color:"#a0a3c0"},grid:{display:false}},y:{ticks:{color:"#a0a3c0",callback:v=>`₹${v}L`},grid:{color:"rgba(255,255,255,0.05)"}}}
+    }
+  });
+
+  // RC Donut
+  const rcLabels = DATA.root_causes.map(r=>r.root_cause.replace(/_/g," "));
+  const rcAmts = DATA.root_causes.map(r=>r.total_amount);
+  const rcCols = DATA.root_causes.map(r=>rc_colors[r.root_cause]);
+  new Chart(document.getElementById("chart-rc-donut"),{
+    type:"doughnut",
+    data:{labels:rcLabels,datasets:[{data:rcAmts,backgroundColor:rcCols,borderWidth:2,borderColor:"#15161f",hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:"65%",
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:d=>`₹${d.raw.toLocaleString("en-IN")}`}}}
+    }
+  });
+
+  // Disc rate line
+  new Chart(document.getElementById("chart-disc-rate"),{
+    type:"line",
+    data:{labels:months,datasets:[{
+      label:"Disc. Rate %",
+      data:DATA.monthly.map(m=>+(m.discrepancy_count/4000*100).toFixed(2)),
+      borderColor:"#f05c6a",backgroundColor:"rgba(240,92,106,0.1)",
+      tension:0.4,fill:true,pointRadius:4,pointBackgroundColor:"#f05c6a"
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{x:{ticks:{color:"#a0a3c0",font:{size:11}},grid:{display:false}},
+              y:{ticks:{color:"#a0a3c0",callback:v=>v+"%"},grid:{color:"rgba(255,255,255,0.05)"}}}
+    }
+  });
+
+  // Risk dist doughnut
+  const rt = DATA.risk_tiers;
+  new Chart(document.getElementById("chart-risk-dist"),{
+    type:"doughnut",
+    data:{labels:["Critical","High","Medium","Low"],
+      datasets:[{data:[rt.CRITICAL,rt.HIGH,14,2],
+        backgroundColor:["rgba(240,92,106,0.8)","rgba(247,197,71,0.8)","rgba(79,142,247,0.8)","rgba(31,204,138,0.8)"],
+        borderWidth:2,borderColor:"#15161f",hoverOffset:4}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,cutout:"60%",
+      plugins:{legend:{display:false}}
+    }
+  });
+
+  // SLA aging mini
+  const agingEl = document.getElementById("sla-aging-mini");
+  agingEl.innerHTML = "";
+  DATA.aging.forEach(a=>{
+    const pct = Math.round(a.count/917*100);
+    agingEl.innerHTML += `
+      <div class="sla-row" style="margin-bottom:6px;padding:10px 14px">
+        <span class="sla-label" style="font-size:12px">${a.aging_bucket}</span>
+        <span class="sla-count" style="font-size:16px;color:${agingColor(a.aging_bucket)}">${a.count}</span>
+        <span class="sla-amount">${INR(a.amount_at_risk)}</span>
+      </div>`;
+  });
+
+  // Fill top discrepancies table
+  const tbody = document.getElementById("tbody-top-disc");
+  tbody.innerHTML = "";
+  DISC_DATA.slice(0,20).forEach(d=>{
+    const neg = d.discrepancy_amount < 0;
+    const exp = d.gmv * 0.66;
+    tbody.innerHTML += `<tr>
+      <td class="mono">${d.transaction_id}</td>
+      <td class="mono">${d.seller_id}</td>
+      <td>${d.month}</td>
+      <td>${d.category}</td>
+      <td class="r">${INR(exp)}</td>
+      <td class="r">${INR(exp + d.discrepancy_amount)}</td>
+      <td class="r" style="color:${neg?"var(--red)":"var(--green)"};font-weight:600;font-family:var(--font-mono)">${neg?"":"+"}${INR(d.discrepancy_amount)}</td>
+      <td><span style="font-family:var(--font-mono);font-size:11px;color:${rc_colors[d.root_cause]}">${d.root_cause.replace(/_/g," ")}</span></td>
+      <td class="r">${d.days_outstanding}d</td>
+      <td>${chip(d.resolution_status)}</td>
+    </tr>`;
+  });
+}
+
+// ── ROOT CAUSE CHARTS ─────────────────────────────────────────────────────────
+let rcChartsInit = false;
+function initRCCharts(){
+  if(rcChartsInit) return;
+  rcChartsInit = true;
+
+  // RC Cards
+  const container = document.getElementById("rc-cards");
+  const maxAmt = Math.max(...DATA.root_causes.map(r=>r.total_amount));
+  DATA.root_causes.forEach(r=>{
+    const barW = Math.round(r.total_amount/maxAmt*100);
+    container.innerHTML += `
+      <div class="rc-item">
+        <div class="rc-icon" style="background:${rc_colors[r.root_cause]}22">${rc_icons[r.root_cause]||"⚠️"}</div>
+        <div class="rc-body">
+          <div class="rc-name">${r.root_cause}</div>
+          <div class="rc-desc">${rc_desc[r.root_cause]}</div>
+          <div class="rc-bar-track"><div class="rc-bar" style="width:${barW}%;background:${rc_colors[r.root_cause]}"></div></div>
+        </div>
+        <div class="rc-stats">
+          <span class="rc-amount" style="color:${rc_colors[r.root_cause]}">${INR(r.total_amount)}</span>
+          <span style="font-family:var(--font-mono);font-size:11px;color:var(--text3)">${r.count} cases</span>
+          ${chip(r.severity)}
+        </div>
+      </div>`;
+  });
+
+  // RC Bar chart
+  new Chart(document.getElementById("chart-rc-bar"),{
+    type:"bar",
+    data:{
+      labels:DATA.root_causes.map(r=>r.root_cause.replace(/_/g," ").replace("MANUAL ADJUSTMENT ","MANl ADJ.")),
+      datasets:[{data:DATA.root_causes.map(r=>r.total_amount),
+        backgroundColor:DATA.root_causes.map(r=>rc_colors[r.root_cause]+"bb"),
+        borderRadius:5,borderSkipped:false}]
+    },
+    options:{
+      indexAxis:"y",responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:d=>"₹"+d.raw.toLocaleString("en-IN")}}},
+      scales:{
+        x:{ticks:{color:"#a0a3c0",callback:v=>"₹"+v.toLocaleString("en-IN")},grid:{color:"rgba(255,255,255,0.05)"}},
+        y:{ticks:{color:"#a0a3c0",font:{size:10}},grid:{display:false}}
+      }
+    }
+  });
+
+  // Over/Under chart
+  new Chart(document.getElementById("chart-over-under"),{
+    type:"bar",
+    data:{
+      labels:DATA.root_causes.map(r=>r.root_cause.replace(/_/g,"\n").split("\n").slice(0,2).join(" ")),
+      datasets:[
+        {label:"Overpayments",data:DATA.root_causes.map(r=>r.overpayments),backgroundColor:"rgba(79,142,247,0.7)",borderRadius:4,stack:"a"},
+        {label:"Underpayments",data:DATA.root_causes.map(r=>r.underpayments),backgroundColor:"rgba(240,92,106,0.7)",borderRadius:4,stack:"a"},
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:"#a0a3c0",boxWidth:10,font:{size:11}}}},
+      scales:{
+        x:{ticks:{color:"#a0a3c0",font:{size:9},maxRotation:30},grid:{display:false}},
+        y:{ticks:{color:"#a0a3c0"},grid:{color:"rgba(255,255,255,0.05)"}}
+      }
+    }
+  });
+
+  // Filter dropdowns
+  const sel = document.getElementById("rc-filter-cause");
+  DATA.root_causes.forEach(r=>{
+    const o = document.createElement("option");
+    o.value = r.root_cause; o.textContent = r.root_cause.replace(/_/g," ");
+    sel.appendChild(o);
+  });
+
+  filterRCTable();
+}
+
+// ── RC TABLE ──────────────────────────────────────────────────────────────────
+let rcPage = 1;
+const RC_PER_PAGE = 12;
+function filterRCTable(){
+  const q = document.getElementById("rc-search").value.toLowerCase();
+  const cause = document.getElementById("rc-filter-cause").value;
+  const month = document.getElementById("rc-filter-month").value;
+  const status = document.getElementById("rc-filter-status").value;
+  const filtered = DISC_DATA.filter(d=>{
+    if(cause && d.root_cause!==cause) return false;
+    if(month && d.month!==month) return false;
+    if(status && d.resolution_status!==status) return false;
+    if(q && !d.transaction_id.toLowerCase().includes(q) && !d.seller_id.toLowerCase().includes(q) && !d.category.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  document.getElementById("rc-count").textContent = `${filtered.length} records`;
+  rcPage = 1;
+  renderRCTable(filtered);
+}
+function renderRCTable(data){
+  const tbody = document.getElementById("tbody-rc");
+  const start = (rcPage-1)*RC_PER_PAGE;
+  const page = data.slice(start, start+RC_PER_PAGE);
+  tbody.innerHTML = page.map(d=>{
+    const neg = d.discrepancy_amount<0;
+    return `<tr>
+      <td class="mono">${d.transaction_id}</td>
+      <td class="mono">${d.seller_id}</td>
+      <td>${d.month}</td>
+      <td>${d.category}</td>
+      <td class="r">${INR(d.gmv)}</td>
+      <td class="r" style="color:${neg?"var(--red)":"var(--blue2)"};font-weight:600;font-family:var(--font-mono)">${neg?"":"+"}${INR(d.discrepancy_amount)}</td>
+      <td>${chip(neg?"UNDERPAYMENT":"OVERPAYMENT",neg?"chip-critical":"chip-over")}</td>
+      <td><span style="font-size:11px;font-family:var(--font-mono);color:${rc_colors[d.root_cause]}">${d.root_cause}</span></td>
+      <td class="r">${d.days_outstanding}d</td>
+      <td>${chip(d.resolution_status)}</td>
+    </tr>`;
+  }).join("");
+  renderPagination("rc-pagination", data.length, RC_PER_PAGE, rcPage, p=>{rcPage=p;renderRCTable(data);});
+}
+
+// ── SLA CHARTS ────────────────────────────────────────────────────────────────
+let slaChartsInit = false;
+function initSLACharts(){
+  if(slaChartsInit) return;
+  slaChartsInit = true;
+
+  // Aging detail
+  const el = document.getElementById("sla-aging-detail");
+  const total = DATA.aging.reduce((s,a)=>s+a.count,0);
+  DATA.aging.forEach(a=>{
+    const pct = Math.round(a.count/total*100);
+    el.innerHTML += `
+      <div class="sla-row" style="border-color:${agingColor(a.aging_bucket)}33">
+        <span class="sla-label">${a.aging_bucket}</span>
+        <span class="sla-count" style="color:${agingColor(a.aging_bucket)}">${a.count}</span>
+        <div style="flex:1">
+          <div style="height:6px;background:rgba(255,255,255,0.06);border-radius:3px">
+            <div style="width:${pct}%;height:100%;background:${agingColor(a.aging_bucket)};border-radius:3px"></div>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-top:3px">${pct}% of breaches</div>
+        </div>
+        <span style="font-family:var(--font-mono);font-size:12px;color:var(--text2)">${INR(a.amount_at_risk)}</span>
+      </div>`;
+  });
+
+  // SLA trend chart
+  new Chart(document.getElementById("chart-sla-trend"),{
+    type:"bar",
+    data:{
+      labels:DATA.monthly.map(m=>m.month.replace("-2024","")),
+      datasets:[
+        {label:"SLA Breaches",data:DATA.monthly.map(m=>m.sla_breaches),backgroundColor:"rgba(240,92,106,0.7)",borderRadius:5},
+        {label:"Total Discrepancies",data:DATA.monthly.map(m=>m.discrepancy_count),backgroundColor:"rgba(255,153,0,0.5)",borderRadius:5},
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:"#a0a3c0",boxWidth:10,font:{size:11}}}},
+      scales:{
+        x:{ticks:{color:"#a0a3c0"},grid:{display:false}},
+        y:{ticks:{color:"#a0a3c0"},grid:{color:"rgba(255,255,255,0.05)"}}
+      }
+    }
+  });
+
+  filterSLATable();
+}
+let slaPage=1;
+const SLA_PER_PAGE=12;
+function filterSLATable(){
+  const q = document.getElementById("sla-search").value.toLowerCase();
+  const month = document.getElementById("sla-filter-month").value;
+  const filtered = DISC_DATA.filter(d=>{
+    if(!d.sla_breach) return false;
+    if(month && d.month!==month) return false;
+    if(q && !d.transaction_id.toLowerCase().includes(q) && !d.seller_id.toLowerCase().includes(q)) return false;
+    return true;
+  }).sort((a,b)=>b.days_outstanding-a.days_outstanding);
+  document.getElementById("sla-count").textContent=`${filtered.length} breaches`;
+  slaPage=1;
+  renderSLATable(filtered);
+}
+function renderSLATable(data){
+  const tbody = document.getElementById("tbody-sla");
+  const start=(slaPage-1)*SLA_PER_PAGE;
+  const page=data.slice(start,start+SLA_PER_PAGE);
+  tbody.innerHTML=page.map(d=>{
+    const neg=d.discrepancy_amount<0;
+    const bucket=d.days_outstanding>=15?"15+d (Critical)":d.days_outstanding>=8?"8-14d (Overdue)":"3-7d (Warning)";
+    return `<tr>
+      <td class="mono">${d.transaction_id}</td>
+      <td class="mono">${d.seller_id}</td>
+      <td>${d.month}</td>
+      <td><span style="font-size:11px;font-family:var(--font-mono);color:${rc_colors[d.root_cause]}">${d.root_cause.replace(/_/g," ")}</span></td>
+      <td class="r" style="color:${neg?"var(--red)":"var(--blue2)"};font-weight:600;font-family:var(--font-mono)">${neg?"":"+"}${INR(d.discrepancy_amount)}</td>
+      <td>${chip(neg?"UNDERPAY":"OVERPAY",neg?"chip-critical":"chip-over")}</td>
+      <td class="r" style="font-weight:700;color:${d.days_outstanding>=15?"var(--red)":d.days_outstanding>=8?"var(--amber)":"var(--text2)"}">${d.days_outstanding}d</td>
+      <td><span style="font-size:11px;font-family:var(--font-mono);color:${agingColor(bucket)}">${bucket}</span></td>
+      <td>${chip(d.resolution_status)}</td>
+    </tr>`;
+  }).join("");
+  renderPagination("sla-pagination",data.length,SLA_PER_PAGE,slaPage,p=>{slaPage=p;renderSLATable(data);});
+}
+
+// ── RISK CHARTS ───────────────────────────────────────────────────────────────
+let riskChartsInit=false;
+function initRiskCharts(){
+  if(riskChartsInit) return;
+  riskChartsInit=true;
+
+  // Scatter
+  const riskColors={CRITICAL:"rgba(240,92,106,0.7)",HIGH:"rgba(247,197,71,0.7)",MEDIUM:"rgba(79,142,247,0.7)",LOW:"rgba(31,204,138,0.7)"};
+  const grouped={CRITICAL:[],HIGH:[],MEDIUM:[],LOW:[]};
+  RISK_DATA.forEach((s,i)=>{
+    grouped[s.risk_tier].push({x:i,y:s.computed_risk_score,label:s.seller_name});
+  });
+  const datasets=Object.entries(grouped).map(([tier,pts])=>({
+    label:tier,
+    data:pts,
+    backgroundColor:riskColors[tier],
+    pointRadius:4,
+    pointHoverRadius:6,
+  }));
+  new Chart(document.getElementById("chart-risk-scatter"),{
+    type:"scatter",
+    data:{datasets},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:"#a0a3c0",boxWidth:10,font:{size:11}}},
+        tooltip:{callbacks:{label:d=>`${d.raw.label}: ${d.raw.y}`}}},
+      scales:{
+        x:{display:false},
+        y:{min:0,max:100,ticks:{color:"#a0a3c0"},grid:{color:"rgba(255,255,255,0.05)"},
+          title:{display:true,text:"Risk Score",color:"#606280",font:{size:11}}}
+      }
+    }
+  });
+
+  filterRiskTable();
+}
+let riskPage=1;
+const RISK_PER_PAGE=12;
+function filterRiskTable(){
+  const q=document.getElementById("risk-search").value.toLowerCase();
+  const tier=document.getElementById("risk-filter-tier").value;
+  const level=document.getElementById("risk-filter-level").value;
+  const filtered=RISK_DATA.filter(d=>{
+    if(tier && d.tier!==tier) return false;
+    if(level && d.risk_tier!==level) return false;
+    if(q && !d.seller_name.toLowerCase().includes(q) && !d.seller_id.toLowerCase().includes(q)) return false;
+    return true;
+  }).sort((a,b)=>b.computed_risk_score-a.computed_risk_score);
+  document.getElementById("risk-count").textContent=`${filtered.length} sellers`;
+  riskPage=1;
+  renderRiskTable(filtered);
+}
+function renderRiskTable(data){
+  const tbody=document.getElementById("tbody-risk");
+  const start=(riskPage-1)*RISK_PER_PAGE;
+  const page=data.slice(start,start+RISK_PER_PAGE);
+  tbody.innerHTML=page.map(d=>`<tr>
+    <td><span style="font-size:13px;font-weight:600">${d.seller_name}</span><br><span style="font-family:var(--font-mono);font-size:11px;color:var(--text3)">${d.seller_id}</span></td>
+    <td>${chip(d.tier)}</td>
+    <td style="font-size:12px">${d.category}</td>
+    <td class="r">${d.disc_rate.toFixed(1)}%</td>
+    <td class="r">${d.sla_breaches}</td>
+    <td class="r"><span style="font-family:var(--font-mono);font-weight:700;color:${d.risk_tier==="CRITICAL"?"var(--red)":d.risk_tier==="HIGH"?"var(--amber)":d.risk_tier==="MEDIUM"?"var(--blue2)":"var(--green)"}">${d.computed_risk_score}</span></td>
+    <td>${chip(d.risk_tier)}</td>
+    <td>${d.predicted_anomaly_next_month?chip("YES ⚠️","chip-yes"):chip("No","chip-no")}</td>
+  </tr>`).join("");
+  renderPagination("risk-pagination",data.length,RISK_PER_PAGE,riskPage,p=>{riskPage=p;renderRiskTable(data);});
+}
+
+// ── SELLER DIRECTORY ──────────────────────────────────────────────────────────
+let sellPage=1;
+const SELL_PER_PAGE=15;
+function initSellers(){
+  const stateSet=new Set(SELLER_DATA.map(s=>s.state));
+  const sel=document.getElementById("sell-state");
+  stateSet.forEach(st=>{const o=document.createElement("option");o.value=st;o.textContent=st;sel.appendChild(o);});
+  filterSellersTable();
+}
+function filterSellersTable(){
+  const q=document.getElementById("sell-search").value.toLowerCase();
+  const tier=document.getElementById("sell-tier").value;
+  const state=document.getElementById("sell-state").value;
+  const filtered=SELLER_DATA.filter(s=>{
+    if(tier && s.tier!==tier) return false;
+    if(state && s.state!==state) return false;
+    if(q && !s.seller_name.toLowerCase().includes(q) && !s.seller_id.toLowerCase().includes(q) && !s.category.toLowerCase().includes(q) && !s.state.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  document.getElementById("sell-count").textContent=`${filtered.length} sellers`;
+  sellPage=1;
+  renderSellersTable(filtered);
+}
+function renderSellersTable(data){
+  const tbody=document.getElementById("tbody-sellers");
+  const start=(sellPage-1)*SELL_PER_PAGE;
+  const page=data.slice(start,start+SELL_PER_PAGE);
+  tbody.innerHTML=page.map(s=>{
+    const rs=RISK_DATA.find(r=>r.seller_id===s.seller_id)||{computed_risk_score:s.risk_score,risk_tier:"MEDIUM"};
+    return `<tr>
+      <td class="mono">${s.seller_id}</td>
+      <td style="font-weight:500">${s.seller_name}</td>
+      <td>${chip(s.tier)}</td>
+      <td style="font-size:12px">${s.category}</td>
+      <td style="font-size:12px">${s.state}</td>
+      <td class="r">${(s.commission_rate*100).toFixed(0)}%</td>
+      <td class="r">${INR(s.avg_monthly_gmv)}</td>
+      <td class="r">${(s.return_rate*100).toFixed(1)}%</td>
+      <td><span style="font-family:var(--font-mono);font-weight:700;color:${rs.risk_tier==="CRITICAL"?"var(--red)":rs.risk_tier==="HIGH"?"var(--amber)":"var(--green)"}">${rs.computed_risk_score}</span></td>
+    </tr>`;
+  }).join("");
+  renderPagination("sellers-pagination",data.length,SELL_PER_PAGE,sellPage,p=>{sellPage=p;renderSellersTable(data);});
+}
+
+// ── CATEGORY CHARTS ───────────────────────────────────────────────────────────
+let catChartsInit=false;
+function initCategoryCharts(){
+  if(catChartsInit) return;
+  catChartsInit=true;
+
+  // GMV bars
+  const el=document.getElementById("cat-gmv-bars");
+  const maxGMV=Math.max(...DATA.categories.map(c=>c.total_gmv));
+  DATA.categories.forEach(c=>{
+    const pct=Math.round(c.total_gmv/maxGMV*100);
+    el.innerHTML+=`<div class="cat-bar-row">
+      <div class="cat-bar-head">
+        <span style="font-size:12px;font-weight:500">${c.category}</span>
+        <span style="font-family:var(--font-mono);font-size:12px;color:var(--text2)">${INR(c.total_gmv)}</span>
+      </div>
+      <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${pct}%;background:var(--amazon)"></div></div>
+    </div>`;
+  });
+
+  // Disc rate chart
+  const discColors=DATA.categories.map(c=>c.disc_rate>10?"rgba(240,92,106,0.8)":c.disc_rate>7?"rgba(247,197,71,0.7)":"rgba(31,204,138,0.7)");
+  new Chart(document.getElementById("chart-cat-disc"),{
+    type:"bar",
+    data:{
+      labels:DATA.categories.map(c=>c.category),
+      datasets:[{data:DATA.categories.map(c=>c.disc_rate),backgroundColor:discColors,borderRadius:5}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:d=>d.raw+"%"}}},
+      scales:{
+        x:{ticks:{color:"#a0a3c0",font:{size:10},maxRotation:35},grid:{display:false}},
+        y:{min:0,max:12,ticks:{color:"#a0a3c0",callback:v=>v+"%"},grid:{color:"rgba(255,255,255,0.05)"}}
+      }
+    }
+  });
+
+  // Category table
+  const tbody=document.getElementById("tbody-cat");
+  tbody.innerHTML=DATA.categories.map(c=>{
+    const health=c.disc_rate>10?"🔴 HIGH RISK":c.disc_rate>7?"🟡 MEDIUM":"🟢 HEALTHY";
+    return `<tr>
+      <td style="font-weight:600">${c.category}</td>
+      <td class="r">${Math.floor(c.total_transactions/100)}</td>
+      <td class="r">${INR(c.total_gmv)}</td>
+      <td class="r">${c.total_transactions.toLocaleString()}</td>
+      <td class="r">${c.discrepancies}</td>
+      <td class="r" style="font-weight:700;color:${c.disc_rate>10?"var(--red)":c.disc_rate>7?"var(--amber)":"var(--green)"}">${c.disc_rate}%</td>
+      <td class="r">${INR(c.total_gmv/c.total_transactions)}</td>
+      <td><span style="font-size:12px">${health}</span></td>
+    </tr>`;
+  }).join("");
+}
+
+// ── MONTHLY CHARTS ────────────────────────────────────────────────────────────
+let monthlyChartsInit=false;
+function initMonthlyCharts(){
+  if(monthlyChartsInit) return;
+  monthlyChartsInit=true;
+
+  const months=DATA.monthly.map(m=>m.month.replace("-2024",""));
+  const momGMV=[null,-0.97,-0.05];
+  const momPayout=[null,-1.18,-0.34];
+  const momDisc=[null,-10.9,8.4];
+
+  const lineOpts=(color,label)=>({
+    type:"line",
+    data:{labels:months,datasets:[{label,data:momGMV,borderColor:color,backgroundColor:color+"22",tension:0.4,fill:true,pointRadius:5,pointBackgroundColor:color}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{x:{ticks:{color:"#a0a3c0"},grid:{display:false}},y:{ticks:{color:"#a0a3c0",callback:v=>v+"%"},grid:{color:"rgba(255,255,255,0.05)"}}}
+    }
+  });
+
+  new Chart(document.getElementById("chart-mom-gmv"),{type:"line",data:{labels:months,datasets:[{label:"GMV MoM%",data:momGMV,borderColor:"#ff9900",backgroundColor:"rgba(255,153,0,0.1)",tension:0.4,fill:true,pointRadius:5,pointBackgroundColor:"#ff9900",spanGaps:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#a0a3c0"},grid:{display:false}},y:{ticks:{color:"#a0a3c0",callback:v=>v+"%"},grid:{color:"rgba(255,255,255,0.05)"}}}}});
+  new Chart(document.getElementById("chart-mom-payout"),{type:"line",data:{labels:months,datasets:[{label:"Payout MoM%",data:momPayout,borderColor:"#1fcc8a",backgroundColor:"rgba(31,204,138,0.1)",tension:0.4,fill:true,pointRadius:5,pointBackgroundColor:"#1fcc8a",spanGaps:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#a0a3c0"},grid:{display:false}},y:{ticks:{color:"#a0a3c0",callback:v=>v+"%"},grid:{color:"rgba(255,255,255,0.05)"}}}}});
+  new Chart(document.getElementById("chart-mom-disc"),{type:"bar",data:{labels:months,datasets:[{label:"Disc MoM%",data:momDisc,backgroundColor:momDisc.map(v=>v===null?"transparent":v<0?"rgba(31,204,138,0.7)":"rgba(240,92,106,0.7)"),borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:d=>d.raw+"%"}}},scales:{x:{ticks:{color:"#a0a3c0"},grid:{display:false}},y:{ticks:{color:"#a0a3c0",callback:v=>v+"%"},grid:{color:"rgba(255,255,255,0.05)"}}}}});
+
+  // Monthly table
+  const tbody=document.getElementById("tbody-monthly");
+  tbody.innerHTML=DATA.monthly.map(m=>`<tr>
+    <td style="font-weight:600">${m.month}</td>
+    <td class="r">120</td>
+    <td class="r">${(4000).toLocaleString()}</td>
+    <td class="r">${INR(m.total_gmv)}</td>
+    <td class="r">${INR(m.total_actual_payout)}</td>
+    <td class="r">${m.discrepancy_count}</td>
+    <td class="r" style="color:var(--amber);font-weight:600">${(m.discrepancy_count/4000*100).toFixed(2)}%</td>
+    <td class="r" style="color:var(--red)">${INR(m.discrepancy_amount)}</td>
+    <td class="r" style="color:var(--red)">${m.sla_breaches}</td>
+    <td>${chip("REVIEW REQUIRED","chip-warn")}</td>
+  </tr>`).join("");
+}
+
+// ── ALERTS ────────────────────────────────────────────────────────────────────
+function initAlerts(){
+  const alerts=[
+    {priority:"P0",type:"Root Cause",desc:"MANUAL_ADJUSTMENT_OVERRIDE: 140 cases — ₹1,25,002 at risk",action:"Immediate investigation, all manual overrides require dual approval",owner:"FinOps Lead",deadline:"TODAY"},
+    {priority:"P0",type:"Root Cause",desc:"DUPLICATE_TRANSACTION: 139 cases — ₹55,663 duplicated payouts",action:"Freeze affected accounts, initiate recovery process",owner:"Finance Controller",deadline:"TODAY"},
+    {priority:"P1",type:"SLA Breach",desc:"657 discrepancies outstanding 15+ days — ₹1,21,839 unresolved",action:"Escalate to operations lead, assign resolution tickets",owner:"Operations",deadline:"48 HOURS"},
+    {priority:"P1",type:"Seller Risk",desc:"47 sellers classified CRITICAL risk — anomaly predictions flagged",action:"Account review, consider payout holds for top 10 accounts",owner:"Seller Engagement",deadline:"48 HOURS"},
+    {priority:"P1",type:"Category Alert",desc:"Automotive: 10.3% discrepancy rate — above 10% threshold",action:"Category audit, review commission rate policy changes",owner:"Category Manager",deadline:"THIS WEEK"},
+    {priority:"P2",type:"Prediction",desc:"94 sellers predicted to have anomalies in Jan 2025",action:"Proactive outreach, review seller onboarding documentation",owner:"Seller Success",deadline:"NEXT WEEK"},
+    {priority:"P2",type:"SLA Warning",desc:"108 discrepancies in 3-7 day warning zone — ₹24,838 at risk",action:"Assign to L2 queue before breach escalates",owner:"Operations",deadline:"5 DAYS"},
+    {priority:"P2",type:"Monthly Trend",desc:"Dec discrepancy count up 8.4% MoM — trend reversal from Nov",action:"Root cause deep dive, check for December seasonal pattern",owner:"Analytics",deadline:"NEXT REVIEW"},
+  ];
+
+  const p0=alerts.filter(a=>a.priority==="P0").length;
+  const p1=alerts.filter(a=>a.priority==="P1").length;
+  const p2=alerts.filter(a=>a.priority==="P2").length;
+
+  document.getElementById("alert-p0").textContent=p0;
+  document.getElementById("alert-p1").textContent=p1;
+  document.getElementById("alert-p2").textContent=p2;
+
+  const container=document.getElementById("alerts-container");
+  container.innerHTML=alerts.map(a=>`
+    <div class="alert-item">
+      <div class="alert-priority ${a.priority==="P0"?"p0":a.priority==="P1"?"p1":"p2"}">${a.priority==="P0"?"P0 CRITICAL":a.priority==="P1"?"P1 HIGH":"P2 MEDIUM"}</div>
+      <div class="alert-content">
+        <div class="alert-type">${a.type}</div>
+        <div class="alert-desc">${a.desc}</div>
+        <div class="alert-action">→ ${a.action}</div>
+      </div>
+      <div class="alert-meta">
+        <span class="alert-owner">${a.owner}</span>
+        <span class="alert-deadline">${a.deadline}</span>
+      </div>
+    </div>`).join("");
+}
+
+// ── PAGINATION ────────────────────────────────────────────────────────────────
+function renderPagination(containerId, total, perPage, currentPage, onPageChange){
+  const totalPages=Math.ceil(total/perPage);
+  const el=document.getElementById(containerId);
+  if(!el||totalPages<=1){if(el)el.innerHTML="";return;}
+  let html=`<span class="pg-info">Page ${currentPage} of ${totalPages}</span>`;
+  html+=`<button class="pg-btn" onclick="(${onPageChange.toString()})(${currentPage-1})" ${currentPage<=1?"disabled":""}>‹</button>`;
+  for(let i=1;i<=totalPages;i++){
+    if(totalPages>7&&i>2&&i<totalPages-1&&Math.abs(i-currentPage)>1){
+      if(i===3||i===totalPages-2) html+=`<span class="pg-info">…</span>`;
+      continue;
+    }
+    html+=`<button class="pg-btn ${i===currentPage?"active":""}" onclick="(${onPageChange.toString()})(${i})">${i}</button>`;
+  }
+  html+=`<button class="pg-btn" onclick="(${onPageChange.toString()})(${currentPage+1})" ${currentPage>=totalPages?"disabled":""}>›</button>`;
+  el.innerHTML=html;
+}
+
+// ── CSV EXPORT ────────────────────────────────────────────────────────────────
+function exportCSV(type){
+  let rows=[],filename="";
+  if(type==="discrepancies"){
+    rows=[["Transaction ID","Seller ID","Month","Category","GMV","Discrepancy","Root Cause","Days Outstanding","Status"],...DISC_DATA.map(d=>[d.transaction_id,d.seller_id,d.month,d.category,d.gmv,d.discrepancy_amount,d.root_cause,d.days_outstanding,d.resolution_status])];
+    filename="discrepancies_Q4_2024.csv";
+  }else if(type==="risk"){
+    rows=[["Seller ID","Name","Tier","Category","Disc Rate %","SLA Breaches","Risk Score","Risk Tier","Predicted"],...RISK_DATA.map(r=>[r.seller_id,r.seller_name,r.tier,r.category,r.disc_rate,r.sla_breaches,r.computed_risk_score,r.risk_tier,r.predicted_anomaly_next_month?"YES":"No"])];
+    filename="seller_risk_scores.csv";
+  }else if(type==="sellers"){
+    rows=[["Seller ID","Name","Tier","Category","State","Commission %","Avg Monthly GMV","Return Rate"],...SELLER_DATA.map(s=>[s.seller_id,s.seller_name,s.tier,s.category,s.state,(s.commission_rate*100).toFixed(0)+"%",s.avg_monthly_gmv,(s.return_rate*100).toFixed(1)+"%"])];
+    filename="seller_directory.csv";
+  }else{
+    rows=[["Month","GMV","Net Payout","Discrepancies","Amount at Risk","SLA Breaches"],...DATA.monthly.map(m=>[m.month,m.total_gmv,m.total_actual_payout,m.discrepancy_count,m.discrepancy_amount,m.sla_breaches])];
+    filename="monthly_overview.csv";
+  }
+  const csv=rows.map(r=>r.map(v=>`"${v}"`).join(",")).join("\n");
+  const blob=new Blob([csv],{type:"text/csv"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=filename;
+  a.click();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+function loadChartJS(cb){
+  if(window.Chart){cb();return;}
+  const s=document.createElement("script");
+  s.src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js";
+  s.onload=cb;
+  s.onerror=()=>{
+    // fallback: try unpkg
+    const s2=document.createElement("script");
+    s2.src="https://unpkg.com/chart.js@4.4.1/dist/chart.umd.js";
+    s2.onload=cb;
+    document.head.appendChild(s2);
+  };
+  document.head.appendChild(s);
+}
+
+function startApp(){
+  fillKPIs();
+  initOverviewCharts();
+  initSellers();
+  initAlerts();
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",()=>loadChartJS(startApp));
+}else{
+  loadChartJS(startApp);
+}
+</script>
+</body>
+</html>
